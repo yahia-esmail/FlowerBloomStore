@@ -1,0 +1,132 @@
+﻿@using FlowerBloomStore.Domain.Entities.ShoppingModules
+@model Cart
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "سلة التسوق";
+    var culture = CultureInfo.GetCultureInfo("ar-SA");
+    var subTotal = Model?.Items?.Sum(i => i.UnitPrice * i.Quantity) ?? 0;
+}
+
+<div class="cart-page">
+
+  
+    <div class="cart-header">
+        <h1>سلة التسوق</h1>
+        <p>مراجعة المنتجات المختارة وإتمام عملية الشراء</p>
+    </div>
+
+    @if (Model?.Items?.Any() != true)
+    {
+        <div class="empty-cart">
+            سلة التسوق فارغة                  <iconify-icon id="34:31"
+                                                           orderindex="80"
+                                                           style="color: color-mix(in oklab, #000 65%, transparent)"
+                                                           icon="lucide:shopping-cart"
+                                                           class="text-base"></iconify-icon>
+        </div>
+    }
+    else
+    {
+        <div class="cart-layout">
+
+         
+            <div class="cart-items">
+
+                    <h2>المنتجات المختارة</h2>
+                <div class="cards">
+
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item">
+
+                            <img src="@item.Product?.ImageUrl" class="item-img" />
+
+                            <div class="item-content">
+                                <h3>@item.Product?.Name</h3>
+                                <div class="quantity-control">
+
+                                    <form asp-action="DecreaseQuantity" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <button type="submit" class="qty-btn">-</button>
+                                    </form>
+
+                                    <span class="qty-number">@item.Quantity</span>
+
+                              
+                                    <form asp-action="IncreaseQuantity" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <button type="submit" class="qty-btn">+</button>
+                                    </form>
+
+                                </div>
+                                <div class="item-bottom">
+
+                                    <div class="price-section">
+                                        <span class="price">
+                                            @((item.UnitPrice * item.Quantity).ToString("C", culture))
+                                        </span>
+
+                                        <form asp-action="RemoveFromCart" method="post">
+                                            <input type="hidden" name="cartItemId" value="@item.Id" />
+                                            <button type="submit" class="remove-btn">
+                                                <iconify-icon id="34:31"
+                                                              orderindex="80"
+                                                              style="color: color-mix(in oklab, #f00 65%, transparent)"
+                                                              icon="lucide:trash-2"
+                                                              class="text-base"></iconify-icon>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+
+        
+            <div class="summary">
+
+                <div class="card sticky">
+
+                    <h3>ملخص الطلب</h3>
+
+                    <div class="summary-row">
+                        <span>المجموع الفرعي:</span>
+                        <span>@subTotal.ToString("C", culture)</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>رسوم التوصيل:</span>
+                        <span>مجاني</span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="summary-row total">
+                        <span>المجموع النهائي:</span>
+                        <span>@subTotal.ToString("C", culture)</span>
+                    </div>
+
+                    <a asp-controller="Checkout"
+                       asp-action="Index"
+                       class="checkout-btn">
+                        إتمام عملية الشراء
+                    </a>
+
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="continue-btn">
+                        الاستمرار في التسوق
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>

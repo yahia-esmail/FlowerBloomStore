@@ -1,0 +1,140 @@
+﻿@using FlowerBloomStore.Domain.Entities
+
+@model FlowerBloomStore.Domain.Entities.ShoppingModules.Wishlist
+
+@{
+    ViewData["Title"] = "قائمة المفضلة";
+}
+
+<div class="container-fluid">
+    <div class="featured-header d-flex justify-content-between align-items-center mt-3 mb-4 px-3">
+        <div>
+            <h2 class="fw-bold">قائمة المفضلة</h2>
+            <p>المنتجات التي أعجبتك وتريد متابعتها</p>
+        </div>
+       
+    </div>
+
+    @if (Model == null || Model.Items == null || !Model.Items.Any())
+    {
+        <div class="text-center py-5 bg-light rounded-3">
+            <i class="bi bi-heart text-muted" style="font-size: 6rem; opacity: 0.4;"></i>
+            <h4 class="mt-4 text-muted fw-bold">قائمتك فارغة حاليًا</h4>
+            <p class="lead text-muted">ابدأ بإضافة المنتجات التي تحبها إلى المفضلة</p>
+            <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-lg mt-3 px-5">
+                تصفح المنتجات
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4">
+            @foreach (var item in Model.Items)
+            {
+                var product = item.Product;
+                <div class="col">
+                    <div class="product-card h-100 shadow-sm border-0 position-relative hover-lift">
+                        <!-- صورة المنتج -->
+                        <div class="product-image" style="height: 240px; overflow: hidden;">
+                            @if (!string.IsNullOrEmpty(product?.ImageUrl))
+                            {
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+                                    <img src="@product.ImageUrl"
+                                         class="img-fluid w-100 h-100"
+                                         alt="@product.Name"
+                                         style="object-fit: cover; transition: transform 0.4s ease;">
+                                </a>
+                            }
+                            else
+                            {
+                                <div class="bg-light h-100 d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-flower1 text-muted" style="font-size: 5rem; opacity: 0.5;"></i>
+                                </div>
+                            }
+
+                            <!-- زر الإزالة العائم في الزاوية (اختياري - يمكنك الاحتفاظ به أو حذفه) -->
+                            <form asp-controller="Wishlist" asp-action="RemoveFromWishlist" method="post"
+                                  class="position-absolute top-0 end-0 m-2">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                
+                                @Html.AntiForgeryToken()
+                            </form>
+                        </div>
+
+                        <!-- المحتوى -->
+                        <div class="product-content p-3 d-flex flex-column">
+                            <h5 class="card-title mb-2 fw-medium">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId"
+                                   class="text-dark text-decoration-none">
+                                    @product?.Name
+                                </a>
+                            </h5>
+
+                            <div class="mt-auto">
+                                <p class="price fw-bold text-danger fs-5 mb-3">
+                                    @if (product?.Price != null)
+                                    {
+                                        @product.Price.ToString("C")
+                                    }
+                                </p>
+
+                                <!-- أزرار الإجراءات (أضف للسلة + إزالة) -->
+                                <div class="d-flex gap-2">
+                                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="btn btn-outline-primary w-100">
+                                            <i class="bi bi-cart-plus me-1"></i> أضف للسلة
+                                        </button>
+                                        @Html.AntiForgeryToken()
+                                    </form>
+
+                                    <form asp-controller="Wishlist" asp-action="RemoveFromWishlist" method="post" class="flex-grow-1">
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" class="btn btn-outline-danger w-100"
+                                                onclick="return confirm('هل أنت متأكد من إزالة المنتج؟');">
+                                            <i class="bi bi-trash me-1"></i> إزالة
+                                        </button>
+                                        @Html.AntiForgeryToken()
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            }
+        </div>
+    }
+</div>
+
+    <style>
+        .product-card:hover {
+            transform: translateY(-8px);
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12) !important;
+        }
+
+        .product-image img {
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-outline-primary {
+            border-color: #2d5f3f;
+            color: #2d5f3f;
+        }
+
+            .btn-outline-primary:hover {
+                background-color: #2d5f3f;
+                color: white;
+            }
+    </style>
+    @* sf *@

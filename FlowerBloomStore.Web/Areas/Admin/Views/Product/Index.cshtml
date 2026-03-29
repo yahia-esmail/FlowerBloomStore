@@ -1,0 +1,133 @@
+﻿@using FlowerBloomStore.Application.ViewModels;
+@using FlowerBloomStore.Application.Enums;
+@using FlowerBloomStore.Domain.Entities.ProductModules
+@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "إدارة المنتجات";
+    Layout = "_AdminLayout";
+}
+
+<header style="background-color: hsla(40, 20%, 98.5%, 1)" class="w-full border-b border-gray-200/60">
+    <div style="padding: 1rem 2rem;" class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+            <h1 style="color: color-mix(in oklab, #000 90%, transparent)" class="text-2xl font-semibold">إدارة المنتجات</h1>
+        </div>
+        
+    </div>
+</header>
+
+<main class="grow shrink w-full p-4 md:p-8 bg-gray-50/50" style="flex-basis: 0%">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8 md:flex-row-reverse">
+        <div class="flex flex-wrap items-center gap-4 ">
+        <div class="flex items-center  gap-x-3">
+     
+            <a href="@Url.Action("Create", "Product", new { area = "Admin" })"
+               class="hover:bg-[#1E4229] flex items-center gap-x-2 rounded-lg text-white"
+               style="background-color: rgba(45, 95, 63, 1); padding: 0.75rem 1rem; text-decoration: none;">
+                <iconify-icon icon="lucide:plus" class="text-sm"></iconify-icon>
+                <span class="text-sm font-medium">إضافة منتج</span>
+            </a>
+        </div>
+          @*  <div class="relative">
+                <input class="focus:outline-none focus:border-[#2D5F3F]/[0.30] text-base w-full sm:w-80 pt-3 pr-10 pb-3 pl-4 border-[1px] border-solid rounded-lg bg-white" 
+                       style="border-color: oklch(92.8% 0.006 264.531);" type="text" placeholder="البحث عن المنتجات..." />
+                <div style="top: 50%; transform: translateY(-50%);" class="flex absolute left-3 justify-center items-center w-5 h-5">
+                    <iconify-icon style="color: color-mix(in oklab, #000 45%, transparent)" icon="lucide:search" class="text-base"></iconify-icon>
+                </div>
+            </div>*@
+        </div>
+    </div>
+
+    <div style="background-color: rgba(255, 255, 255, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06);" class="overflow-hidden rounded-2xl border border-gray-100">
+        <div class="overflow-x-auto">
+            <table class="w-full text-right">
+                <thead class="bg-gray-50/80 border-b border-gray-100">
+                    <tr class="text-sm font-medium text-gray-400 uppercase">
+                        <th class="p-4 text-center w-12">#</th>
+                        <th class="p-4">المنتج</th>
+                        <th class="p-4">الفئة</th>
+                        <th class="p-4">المخزون</th>
+                        <th class="p-4">السعر</th>
+                        <th class="p-4 text-center">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @foreach (var product in Model)
+                    {
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="p-4 text-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-[#2D5F3F] focus:ring-[#2D5F3F]" />
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-x-3">
+                                    <img alt="@product.Name" 
+                                         src="@(string.IsNullOrEmpty(product.ImageUrl) ? Url.Content("~/images/default-product.png") : Url.Content(product.ImageUrl))" 
+                                         class="w-12 h-12 object-cover rounded-lg border border-gray-100" 
+                                         onerror="this.src='@Url.Content("~/images/default-product.png")'" />
+                                    <div>
+                                        <div class="text-base font-bold text-gray-800">@product.Name</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-gray-600">@(product.Category?.Name ?? "بدون فئة")</td>
+                            <td class="p-4">
+                                <span class="px-2 py-1 rounded bg-gray-100 text-gray-700 font-medium">@product.StockQuantity</span>
+                            </td>
+                            <td class="p-4 font-bold text-[#2D5F3F]">@product.Price.ToString("C")</td>
+                            <td class="p-4">
+                                <div class="flex items-center justify-center gap-x-3">
+                                   
+                                    <a href="@Url.Action("Edit", "Product", new { area = "Admin", id = product.Id })" 
+                                       title="تعديل" class="text-blue-700 hover:text-blue-900 transition-colors">
+                                        <iconify-icon icon="lucide:edit" class="text-m"></iconify-icon>
+                                    </a>
+
+                                   
+                                    <a href="@Url.Action("Delete", "Product", new { area = "Admin", id = product.Id })" 
+                                       title="حذف" class="text-red-700 hover:text-red-900 transition-colors">
+                                        <iconify-icon icon="lucide:trash-2" class="text-m"></iconify-icon>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+     
+        <div class="p-6 bg-white border-t border-gray-100 flex flex-col sm:flex-row justify-center items-center gap-8">
+            <div class="text-sm text-gray-500 font-medium">
+                عرض <span class="text-gray-800">@Model.Count()</span> من <span class="text-gray-800">@ViewBag.TotalItems</span> منتج
+            </div>
+
+            <div class="flex items-center gap-1">
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <a href="@Url.Action("Index", "Product", new { area = "Admin", page = ViewBag.CurrentPage - 1, categoryId = ViewBag.CategoryId })" 
+                       class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all">
+                        <iconify-icon icon="lucide:chevron-right" class="text-lg"></iconify-icon>
+                    </a>
+                }
+
+                @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.CurrentPage + 2, ViewBag.TotalPages); i++)
+                {
+                    <a href="@Url.Action("Index", "Product", new { area = "Admin", page = i, categoryId = ViewBag.CategoryId })" 
+                       class="flex items-center justify-center w-8 h-8 rounded-lg border font-bold transition-all @(i == ViewBag.CurrentPage ? "bg-[#2D5F3F] border-[#2D5F3F] text-white shadow-md shadow-[#2D5F3F]/20" : "border-gray-200 text-gray-600 hover:bg-gray-50")">
+                        @i
+                    </a>
+                }
+
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <a href="@Url.Action("Index", "Product", new { area = "Admin", page = ViewBag.CurrentPage + 1, categoryId = ViewBag.CategoryId })" 
+                       class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 transition-all">
+                        <iconify-icon icon="lucide:chevron-left" class="text-lg"></iconify-icon>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</main>

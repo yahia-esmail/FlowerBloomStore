@@ -1,0 +1,255 @@
+﻿@* @using FlowerBloomStore.Domain.Entities.ProductModules *@
+@using FlowerBloomStore.Application.ViewModels;
+@using FlowerBloomStore.Application.Enums;
+@* @model IEnumerable<Product> *@
+@model ProductsGalleryVM;
+
+
+
+<div class="container-fluid">
+    <div class="featured-header d-flex justify-content-between align-items-center mb-1 mt-3 px-3">
+        <div>
+            <h2>منتجات مميزة</h2>
+            <p>اكتشف أفضل منتجاتنا المختارة خصيصاً لك</p>
+        </div>
+    </div>
+</div>
+
+
+<section class="featured-section container-fluid my-1">
+    <div class="d-flex flex-column flex-md-row">
+        <!-- Mobile Filter Button (Visible only on mobile) -->
+        <div class="d-block d-md-none mb-3">
+            <button class="btn w-100 d-flex justify-content-between align-items-center"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#filterCollapse"
+                    style="background: #2d5f3f; color: white; border: none; padding: 12px 15px; border-radius: 8px;">
+                <span>تصفية المنتجات</span>
+                <iconify-icon icon="lucide:filter" style="font-size: 20px;"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- Filter Column (Collapsible on mobile) -->
+        <div class="collapse d-md-block flex-shrink-0" id="filterCollapse">
+            <form asp-action="FilteredProducts"
+                  asp-controller="Product"
+                  method="get">
+                <div class="card shadow-sm p-3 position-sticky" style="top: 20px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">الفئة</h5>
+                        <a style="cursor:pointer; color:#2d5f3f;" id="clearAllFilters" class="small text-decoration-underline">
+                            إزالة الفلاتر
+                        </a>
+                    </div>
+
+                    <!-- Categories stacked vertically -->
+                    <div class="mb-3">
+                        @foreach (var category in Model.CategoryNames)
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input categoriesClass"
+                                       type="checkbox"
+                                       @(Model.SelectedCatgorieIDs.Contains(category.Id) ? "checked" : "")
+                                       name="SelectedCatgorieIDs"
+                                       value="@category.Id"
+                                       id="cat_@category.Id" />
+                                <label class="form-check-label" for="cat_@category.Id">
+
+                                    @category.Name
+                                </label>
+                            </div>
+                        }
+                    </div>
+
+                    <hr />
+
+
+                    <h5 class="fw-bold mb-3">ترتيب حسب السعر</h5>
+
+                    <!-- Price options stacked vertically -->
+                    <div class="mb-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input categoriesClass"
+                                   name="SelectedPriceOrder"
+                                   type="radio"
+                                   @(Model.SelectedPriceOrder == PriceOrder.HighToLow ? "checked" : "")
+                                   value="@PriceOrder.HighToLow"
+                                   id="highToLow" />
+                            <label class="form-check-label" for="highToLow">
+                                الأعلى أولاً
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <input class="form-check-input categoriesClass"
+                                   name="SelectedPriceOrder"
+                                   type="radio"
+                                   @(Model.SelectedPriceOrder == PriceOrder.LowToHigh ? "checked" : "")
+                                   value="@PriceOrder.LowToHigh"
+                                   id="lowToHigh" />
+                            <label class="form-check-label" for="lowToHigh">
+                                الأقل أولاً
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-3">
+                        <button type="submit" class="btn" style="background:#2d5f3f; color:white">
+                            تطبيق
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Column (Takes Remaining Space) -->
+        <div class="flex-grow-1 pe-md-3">
+            <!-- Products Grid -->
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 g-md-4">
+                @foreach (var product in Model.Products)
+                {
+                    <div class="col">
+                        <div class="product-card h-100">
+
+                            <div class="product-image">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                                        <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid" />
+                                    </a>
+                                }
+                                else
+                                {
+                                    <img src="/images/default-product.jpg" alt="No Image" class="img-fluid" />
+                                }
+
+                                @* <button class="wishlist-btn">
+
+                                    <iconify-icon style="color: color-mix(in oklab, #000 65%, transparent)"
+                                                  icon="lucide:heart" class="text-base"></iconify-icon>
+                                </button> *@
+                            </div>
+
+                            <div class="product-content p-2">
+                                <h3 class="h6 mb-2">@product.Name</h3>
+
+                                <div class="product-footer d-flex justify-content-between align-items-center">
+                                    <span class="price small">@product.Price ريال</span>
+
+                                    <form asp-controller="Cart"
+                                          asp-action="AddToCart"
+                                          method="post">
+                                        <input type="hidden" name="productId" value="@product.Id" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="add-btn">
+                                            أضف للسلة
+                                            <iconify-icon icon="lucide:shopping-cart"></iconify-icon>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4">
+
+                @if (Model.PagesInfo.PagesCount > 1)
+                {
+                    <form method="get" asp-action="FilteredProducts" asp-controller="Product">
+                        @foreach (var catId in Model.SelectedCatgorieIDs)
+                        {
+                            <input type="hidden" name="SelectedCatgorieIDs" value="@catId" />
+                        }
+                        <input type="hidden" name="SelectedPriceOrder" value="@Model.SelectedPriceOrder" />
+                        <input type="hidden" id="pageNumber" name="currentPage" value="1" />
+
+                        <ul class="pagination justify-content-center gap-1 gap-md-2 flex-row-reverse">
+                            @for (int i = 1; i <= Model.PagesInfo.PagesCount; i++)
+                            {
+                                <li class="page-item @(i == Model.PagesInfo.currentPage ? "active" : "")">
+                                    <button type="submit"
+                                            class="page-link border-0 rounded-2 fw-medium"
+                                            style="width: 35px; height: 35px; width-md: 40px; height-md: 40px; display: flex; align-items: center; justify-content: center; @(i == Model.PagesInfo.currentPage ? "background-color: #2D5F3F; color: white;" : "background-color: transparent; color: rgba(0,0,0,0.65);")"
+                                            onmouseover="this.style.backgroundColor='@(i == Model.PagesInfo.currentPage ? "#2D5F3F" : "rgba(45, 95, 63, 0.05)")'"
+                                            onmouseout="this.style.backgroundColor='@(i == Model.PagesInfo.currentPage ? "#2D5F3F" : "transparent")'"
+                                            onclick="document.getElementById('pageNumber').value=@i">
+                                        @i
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </form>
+                }
+            </nav>
+
+        </div>
+    </div>
+</section>
+
+
+
+<style>
+    /* Desktop styles */
+    @@media (min-width: 768px) {
+        #filterCollapse {
+            width: 250px !important;
+            margin-left: 1rem !important;
+            flex-shrink: 0 !important;
+        }
+    }
+
+    /* Mobile styles */
+    @@media (max-width: 767.98px) {
+        #filterCollapse {
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+            #filterCollapse .card {
+                width: 100% !important;
+                border-radius: 8px !important;
+            }
+        /* Ensure the collapse animation works smoothly */
+        .collapse:not(.show) {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block !important;
+        }
+    }
+</style>
+
+<script>
+    const clearAllFilters = document.getElementById('clearAllFilters');
+    const allCategories = document.getElementsByClassName('categoriesClass');
+
+
+    clearAllFilters.addEventListener('click', function () {
+        for (const cat of allCategories) {
+            cat.checked = false;
+        }
+    });
+
+
+    // Auto-close filter on mobile after form submission
+    // document.querySelectorAll('#filterCollapse form input, #filterCollapse form button[type="submit"]').forEach(element => {
+    //     element.addEventListener('click', function() {
+    //         if (window.innerWidth < 768) {
+    //             setTimeout(() => {
+    //                 const filterCollapse = document.getElementById('filterCollapse');
+    //                 if (filterCollapse.classList.contains('show')) {
+    //                     bootstrap.Collapse.getInstance(filterCollapse)?.hide();
+    //                 }
+    //             }, 100);
+    //         }
+    //     });
+    // });
+</script>
+

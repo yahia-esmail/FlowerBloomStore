@@ -1,0 +1,177 @@
+﻿@using FlowerBloomStore.Web.Models
+@model HomeViewModel
+
+@{
+    ViewData["Title"] = "Flora - الصفحة الرئيسية";
+}
+
+<section class="hero">
+    <div class="hero-overlay">
+        <div class="hero-content">
+            <h1>عبّر عن مشاعرك بأجمل الزهور</h1>
+            <p>اكتشف مجموعتنا المميزة من الزهور الطبيعية والباقات المصممة خصيصاً لجعل لحظاتكم الخاصة لا تُنسى</p>
+            <div class="hero-buttons">
+                <a asp-controller="Product" asp-action="Index" class="btn btn-primary">تسوق الآن</a>
+                <button class="btn btn-secondary">اكتشف المناسبات</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="categories-section">
+    <div class="section-header">
+        <h2>تسوق حسب الفئة</h2>
+        <p>اختر من فئاتنا المتنوعة لتجد ما يناسب ذوقك</p>
+    </div>
+    <div class="categories-grid">
+        @foreach (var category in Model.Categories)
+        {
+            <div class="category-card">
+                @if (!string.IsNullOrEmpty(category.ImageUrl))
+                {
+                    <img src="@category.ImageUrl" alt="@category.Name" />
+                }
+                else
+                {
+                    <img src="/images/default-category.jpg" alt="No Image" />
+                }
+                <div class="category-content">
+                    <h3>@category.Name</h3>
+                    <a asp-controller="Product"
+                       asp-action="Index"
+                       asp-route-categoryId="@category.Id"
+                       class="category-btn">
+                        تسوق الآن <span class="arrow">←</span>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="featured-section">
+    <div class="featured-header">
+        <div>
+            <h2>منتجات مميزة</h2>
+            <p>اكتشف أفضل منتجاتنا المختارة خصيصاً لك</p>
+        </div>
+        <a asp-controller="Product" asp-action="Index" class="view-all">عرض الكل ←</a>
+    </div>
+
+    <div class="products-grid">
+        @foreach (var product in Model.FeaturedProducts)
+        {
+            <div class="product-card">
+                <div class="product-image">
+
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                        <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid" />
+                    </a>
+                    @* <img src="@(product.ImageUrl ?? "/images/default-product.jpg")" alt="@product.Name" /> *@
+
+                    @* <!-- زر المفضلة الآن كـ form POST -->
+                    <form asp-controller="Wishlist" asp-action="AddToWishlist" method="post"
+                          class="position-absolute top-0 end-0 m-2">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <!-- Heart button – now with AJAX -->
+                        <button class="wishlist-btn border-0 bg-transparent p-0 position-absolute top-0 end-0 m-2"
+                                type="button"
+                                data-product-id="@product.Id"
+                                title="إضافة/إزالة من المفضلة">
+                            <iconify-icon icon="lucide:heart"
+                                          class="fs-4 text-danger wishlist-heart"
+                                          data-is-filled="false">
+                            </iconify-icon>
+                        </button>
+                        @Html.AntiForgeryToken()
+                    </form> *@
+                </div>
+
+                <div class="product-content">
+                    <h3>@product.Name</h3>
+                    <div class="product-footer">
+                        <span class="price">@product.Price.ToString("N2") ريال</span>
+
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="add-btn">
+                                أضف للسلة
+                                <iconify-icon icon="lucide:shopping-cart"></iconify-icon>
+                            </button>
+                            @Html.AntiForgeryToken()
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+
+    <script>
+        document.addEventListener('click', async function(e) {
+            if (!e.target.closest('.wishlist-btn')) return;
+
+            e.preventDefault();
+            const btn = e.target.closest('.wishlist-btn');
+            const productId = btn.dataset.productId;
+            const heart = btn.querySelector('.wishlist-heart');
+            const isCurrentlyFilled = heart.dataset.isFilled === 'true';
+
+            try {
+                const formData = new FormData();
+                formData.append('productId', productId);
+                formData.append('__RequestVerificationToken',
+                    document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+                const response = await fetch('/Wishlist/AddToWishlist', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error('Network error');
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Toggle heart
+                    if (data.isAdded) {
+                        heart.setAttribute('icon', 'lucide:heart-filled');
+                        heart.dataset.isFilled = 'true';
+                    } else {
+                        heart.setAttribute('icon', 'lucide:heart');
+                        heart.dataset.isFilled = 'false';
+                    }
+
+                    // Show toast
+                    showToast(data.message);
+                } else {
+                    showToast(data.message || 'حدث خطأ');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('حدث خطأ، حاول مرة أخرى');
+            }
+        });
+
+        // Simple toast notification
+        // function showToast(msg) {
+        //     const toast = document.createElement('div');
+        //     toast.textContent = msg;
+        //     toast.style.cssText = `
+        //         position: fixed; bottom: 30px; right: 30px;
+        //         background: red; color: white; padding: 12px 24px;
+        //         border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        //         opacity: 0; transition: opacity 0.4s ease;
+        //         font-family: inherit; font-size: 16px;
+        //     `;
+        //     document.body.appendChild(toast);
+
+        //     setTimeout(() => toast.style.opacity = '1', 50);
+        //     setTimeout(() => {
+        //         toast.style.opacity = '0';
+        //         setTimeout(() => toast.remove(), 500);
+        //     }, 2500);
+        // }
+    </script>

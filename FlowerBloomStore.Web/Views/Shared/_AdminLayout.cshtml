@@ -1,0 +1,77 @@
+﻿    @{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!--FontAwesome version: 6.7.2-->
+    <link rel="stylesheet" href="https://static.paraflowcontent.com/public/css/font-awesome/font-awesome.672.css" />
+    <!--Tailwind version: 4.0.17-->
+    <script src="https://static.paraflowcontent.com/public/js/tailwind/tailwind.js"></script>
+    <!--iconify-icon version: 3.0.0-->
+    <script src="https://static.paraflowcontent.com/public/js/iconify/iconify-icon-3.0.0.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="~/assets/images/iconLogo.png" />
+
+</head>
+<body class="font-[-apple-system,BlinkMacSystemFont,'Segoe UI'] flex flex-col md:flex-row w-full min-h-screen" style="line-height: 1.6">
+
+    <!-- Aside / Sidebar -->
+    @* <aside style="background-color: hsla(40, 18%, 97%, 1)" class="shrink-0 w-full md:w-64 md:min-w-fit h-[100dvh] "> *@
+    <aside style="background-color: hsla(40, 18%, 97%, 1)" class="shrink-0 w-full md:w-64 md:min-w-fit lg:h-[100dvh] md:sticky md:top-0 self-start">
+        <div class="flex flex-col h-full p-6">
+            <!-- Logo -->
+            <div class="logo">
+                <a asp-action="Index" asp-controller="/Home">
+                    <img src="~/assets/images/logo.png" width="120px" />
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex flex-col gap-y-2 mt-8">
+                <a href="@Url.Action("Index", "Product", new { area = "Admin" })" 
+                   class="flex items-center gap-x-3 p-3 rounded-lg transition-all @(currentController == "Product" ? "" : "hover:text-[#2D5F3F] hover:bg-[#2D5F3F]/5")"
+                   style="@(currentController == "Product" ? "background-color: color-mix(in oklab, #2d5f3f 10%, transparent); color: rgba(45, 95, 63, 1);" : "color: color-mix(in oklab, #000 65%, transparent)")">
+                    <div class="flex justify-center items-center w-5 h-5">
+                        <iconify-icon icon="lucide:flower" class="text-base"></iconify-icon>
+                    </div>
+                    <span class="@(currentController == "Product" ? "font-medium" : "")">المنتجات</span>
+                </a>
+
+                <a href="@Url.Action("Index", "Order")" 
+                   class="flex items-center gap-x-3 p-3 rounded-lg transition-all @(currentController == "Order" ? "" : "hover:text-[#2D5F3F] hover:bg-[#2D5F3F]/5")"
+                   style="@(currentController == "Order" ? "background-color: color-mix(in oklab, #2d5f3f 10%, transparent); color: rgba(45, 95, 63, 1);" : "color: color-mix(in oklab, #000 65%, transparent)")">
+                    <div class="flex justify-center items-center w-5 h-5">
+                        <iconify-icon icon="lucide:shopping-bag" class="text-base"></iconify-icon>
+                    </div>
+                    <span class="@(currentController == "Order" ? "font-medium" : "")">الطلبات</span>
+                </a>
+            </nav>
+
+            <!-- Profile -->
+            <div style="margin-top: auto; border-top-style: solid; border-color: color-mix(in oklab, oklch(92.8% 0.006 264.531) 60%, transparent);" class="pt-6 border-t-[1px]">
+                <div class="hover:bg-[#2D5F3F]/5 flex items-center gap-x-3 p-3 rounded-lg">
+                    <img alt="Admin profile photo of a professional middle-eastern woman" src="https://static.paraflowcontent.com/public/resource/image/a1f51c00-96b2-4d7a-afb2-7f74760f93ce.jpeg" class="w-10 h-10 object-cover rounded-full" />
+                    <div style="flex-basis: 0%" class="grow shrink">
+                        <div style="color: color-mix(in oklab, #000 90%, transparent)" class="text-sm font-medium">سارة أحمد</div>
+                        <div style="color: color-mix(in oklab, #000 45%, transparent)" class="text-xs">المدير</div>
+                    </div>
+                    <div class="flex justify-center items-center w-5 h-5">
+                        <iconify-icon style="color: color-mix(in oklab, #000 45%, transparent)" icon="lucide:chevron-left" class="text-base"></iconify-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div style="flex-basis: 0%" class="overflow-x-hidden flex flex-col grow shrink min-h-screen lg:w-80">
+        @RenderBody()
+           
+    </div>
+</body>
+</html>

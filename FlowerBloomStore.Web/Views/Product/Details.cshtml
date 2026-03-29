@@ -1,0 +1,346 @@
+﻿@model FlowerBloomStore.Application.ViewModels.ProductDetailsVM
+
+
+
+<!-- Breadcrumb -->
+@* <nav class="mb-4">
+    <div style="color: color-mix(in oklab, #000 65%, transparent);" class="text-sm d-flex align-items-center gap-2">
+        <a class="text-decoration-none hover-text-[#2D5F3F]" href="/">الرئيسية</a>
+        <iconify-icon icon="lucide:chevron-left" class="text-xs"></iconify-icon>
+        <a class="text-decoration-none hover-text-[#2D5F3F]" href="/Product">المتجر</a>
+        <iconify-icon icon="lucide:chevron-left" class="text-xs"></iconify-icon>
+        <span style="color: rgba(45, 95, 63, 1);">@Model.Name</span>
+    </div>
+</nav> *@
+
+<!-- Product Details Card -->
+<div style="background-color: rgba(255, 255, 255, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06);" class="overflow-hidden mb-4 rounded-3">
+    <div class="row g-4 p-4">
+
+        <!-- Left side - Images -->
+        <div class="col-md-6">
+            <div class="d-flex gap-3">
+                <!-- Main image -->
+                <div class="flex-grow-1">
+                    <div class="position-relative" style="width: 100%; height: 0; padding-bottom: 100%; overflow: hidden; border-radius: 1rem;">
+                        <img src="@Model.ImageUrl"
+                             alt="@Model.Name"
+                             id="ProductMainImage"
+                             class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
+
+                        <!-- New badge -->
+                        <div style="background-color: rgba(232, 168, 160, 1); color: color-mix(in oklab, #fff 92%, transparent); padding: 0.25rem 0.75rem;" class="position-absolute top-0 start-0 m-3 small fw-medium rounded-pill">
+                            جديد
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thumbnail images -->
+                <div class="d-flex flex-column gap-2" style="width: 90px;">
+                    <div class="overflow-hidden rounded-3">
+                        <img class="opacity-75-hover w-100 object-fit-cover aspect-ratio-1" 
+                             onmouseover="displayMainImage(src)"
+                             onclick="displayMainImage(src)" src="@Model.ImageUrl" alt="@Model.Name">
+                    </div>
+                    
+                    @foreach(var image in Model.ProductImages)
+                    {
+                        <div class="overflow-hidden rounded-3">
+                            <img class="opacity-75-hover w-100 object-fit-cover aspect-ratio-1" 
+                                 onmouseover="displayMainImage(src)"
+                                 onclick="displayMainImage(src)" src="@image.Url">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right side - Product Info -->
+        <div class="col-md-6">
+            <div class="d-flex flex-column gap-3">
+
+                <!-- Title and rating -->
+                <div>
+                    <h1 style="color: color-mix(in oklab, #000 90%, transparent);" class="display-6 fw-semibold mb-3">@Model.Name</h1>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="d-flex align-items-center gap-1">
+                            <iconify-icon style="color: oklch(79.5% 0.184 86.047);" icon="lucide:star" class="fs-5"></iconify-icon>
+                            <iconify-icon style="color: oklch(79.5% 0.184 86.047);" icon="lucide:star" class="fs-5"></iconify-icon>
+                            <iconify-icon style="color: oklch(79.5% 0.184 86.047);" icon="lucide:star" class="fs-5"></iconify-icon>
+                            <iconify-icon style="color: oklch(79.5% 0.184 86.047);" icon="lucide:star" class="fs-5"></iconify-icon>
+                            <iconify-icon style="color: oklch(79.5% 0.184 86.047);" icon="lucide:star" class="fs-5"></iconify-icon>
+                        </div>
+                        <span style="color: color-mix(in oklab, #000 65%, transparent);" class="small">(@Model.AverageRating تقييم)</span>
+                        <span style="color: rgba(45, 95, 63, 1);" class="small">@Model.AverageRating من 5</span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="d-flex align-items-center gap-3">
+                        <span style="color: rgba(45, 95, 63, 1);" class="display-6 fw-semibold">@Model.Price ريال</span>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <p style="line-height: 1.625; color: color-mix(in oklab, #000 65%, transparent);" class="fs-5">
+                        @Model.Description
+                    </p>
+                </div>
+
+                <!-- Quantity and Add to Cart -->
+                <div class="d-flex flex-column gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span style="color: color-mix(in oklab, #000 90%, transparent);" class="fw-medium">الكمية:</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <button onclick="decrementQuantity()" class="btn btn-outline-secondary border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border-radius: 8px;">
+                                <iconify-icon style="color: color-mix(in oklab, #000 65%, transparent);" icon="lucide:minus" class="text-base"></iconify-icon>
+                            </button>
+                            <div style="width: 60px; height: 40px; background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);" class="d-flex justify-content-center align-items-center rounded-3 mx-3">
+                                <span id="quantityDisplay" style=color: color-mix(in oklab, #000 90%, transparent);" class="fw-medium">1</span>
+                            </div>
+                            <button onclick="incrementQuantity()" class="btn btn-outline-secondary border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; border-radius: 8px;">
+                                <iconify-icon style="color: color-mix(in oklab, #000 65%, transparent);" icon="lucide:plus" class="text-base"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart Form -->
+                    <form asp-controller="Cart" asp-action="AddToCart" method="post" class="d-flex gap-2">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <input type="hidden" name="quantity" id="quantityInput" value="1" />
+
+                        <button type="submit" class="btn text-white border-0 py-2 px-4 flex-grow-1 d-flex align-items-center justify-content-center gap-2 rounded-3" style="background-color: rgba(45, 95, 63, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.15);">
+                            <iconify-icon icon="lucide:shopping-cart" class="text-base"></iconify-icon>
+                            <span class="fw-medium">أضف إلى السلة</span>
+                        </button>
+
+                        <button type="button"
+                                class="wish-btn btn btn-light d-flex justify-content-center align-items-center  rounded-3 position-relative"
+                                data-product-id="@Model.Id"
+                                data-url="@Url.Action("AddToWishlist", "Wishlist")"
+                                style="background-color: color-mix(in oklab, #fff 90%, transparent); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06); width: 48px; height: 48px; margin-right:8px; border:1px solid rgba(45, 95, 63, 1)">
+
+                            <!-- Normal state -->
+                            <iconify-icon icon="lucide:heart"
+                                          class="wishlist-icon wishlist-normal-state text-base"
+                                          style="color: color-mix(in oklab, @(Model.InWishlist? "#f00" : "#000") 65%, transparent);">
+                            </iconify-icon>
+
+                            <!-- Loading state (hidden by default) -->
+                            <iconify-icon icon="lucide:loader-2"
+                                          class="wishlist-loading-state d-none text-base fa-spin position-absolute"
+                                          style="color: color-mix(in oklab, #000 65%, transparent);">
+                            </iconify-icon>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+                <!-- Delivery Info -->
+                <div style="background-color: color-mix(in oklab, #2D5F3F 5%, transparent);" class="p-3 rounded-4 mt-3">
+                    <div class="d-flex align-items-start gap-2 mb-2">
+                        <div style="margin-top: 0.125rem;" class="d-flex justify-content-center align-items-center" style="width: 20px; height: 20px;">
+                            <iconify-icon style="color: rgba(45, 95, 63, 1);" icon="lucide:truck" class="text-base"></iconify-icon>
+                        </div>
+                        <div>
+                            <h4 style="color: color-mix(in oklab, #000 90%, transparent);" class="fs-6 fw-semibold mb-1">التوصيل المجاني</h4>
+                            <p style="color: color-mix(in oklab, #000 65%, transparent);" class="small">توصيل مجاني داخل الرياض خلال ساعتين</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <div style="margin-top: 0.125rem;" class="d-flex justify-content-center align-items-center" style="width: 20px; height: 20px;">
+                            <iconify-icon style="color: rgba(45, 95, 63, 1);" icon="lucide:clock" class="text-base"></iconify-icon>
+                        </div>
+                        <div>
+                            <h4 style="color: color-mix(in oklab, #000 90%, transparent);" class="fs-6 fw-semibold mb-1">التوصيل السريع</h4>
+                            <p style="color: color-mix(in oklab, #000 65%, transparent);" class="small">اطلب الآن واستلم خلال ساعتين</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Related Products Section -->
+@if (Model.RelatedProducts.Any())
+{
+    <div class="mt-5">
+        <h2 style="color: color-mix(in oklab, #000 90%, transparent);" class="fs-2 fw-semibold mb-4">منتجات مشابهة</h2>
+        <div class="row g-4">
+
+            @foreach (var product in Model.RelatedProducts)
+            {
+                <div class="col-md-3">
+                    <div class="card h-100 border-0 overflow-hidden rounded-4" style="background-color: rgba(255, 255, 255, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06); transition: box-shadow 0.3s ease;">
+                        <div class="position-relative">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                                <img src="@(product.ImageUrl ?? "/images/default-product.jpg")" alt="@product.Name" class="card-img-top" style="height: 180px; object-fit: cover;">
+                            </a>
+                            @* <button class="btn position-absolute top-0 end-0 m-2 p-0 border-0 bg-white rounded-circle d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; background-color: color-mix(in oklab, #fff 90%, transparent);">
+                                <iconify-icon style="color: color-mix(in oklab, #000 65%, transparent);" icon="lucide:heart" class="text-sm"></iconify-icon>
+                            </button> *@
+                        </div>
+                        <div class="card-body d-flex flex-column gap-2">
+                            <h5 style="color: color-mix(in oklab, #000 90%, transparent);" class="card-title fs-6 fw-semibold">@product.Name</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span style="color: rgba(45, 95, 63, 1);" class="fs-5 fw-semibold">@product.Price.ToString("N2") ريال</span>
+                                <form asp-controller="Cart"
+                                      asp-action="AddToCart"
+                                      method="post">
+
+                                    <input type="hidden" name="productId" value="@product.Id" />
+                                    <input type="hidden" name="quantity" value="1" />
+
+                                    <button type="submit" class="btn border-0 rounded-3 d-flex align-items-center gap-1" style="background-color: rgba(45, 95, 63, 0.1); color: rgba(45, 95, 63, 1); padding: 0.5rem 0.75rem;">
+                                        <iconify-icon icon="lucide:shopping-cart" class="text-sm"></iconify-icon>
+                                    </button>
+                                </form>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+<!-- Add custom CSS for hover effects -->
+<style>
+    .hover-text-\[\#2D5F3F\]:hover {
+        color: #2D5F3F !important;
+    }
+
+    .opacity-75-hover:hover {
+        opacity: 0.75;
+        transition: opacity 0.3s ease;
+    }
+
+    .aspect-ratio-1 {
+        aspect-ratio: 1 / 1;
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 12px rgba(45, 95, 63, 0.08) !important;
+    }
+
+    
+</style>
+<!-- Quantity Control Script -->
+<script>
+    function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.cssText = `
+                position: fixed; bottom: 30px; right: 30px;
+                background: #198754; color: white; padding: 12px 24px;
+                border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+                opacity: 0; transition: opacity 0.4s ease;
+                font-family: inherit; font-size: 16px;
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.style.opacity = '1', 50);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 2500);
+        }
+    function displayMainImage(imageUrl){
+        const ProductMainImage = document.getElementById('ProductMainImage');
+        ProductMainImage.src=imageUrl;
+    }
+
+    function incrementQuantity() {
+        let input = document.getElementById('quantityInput');
+        let display = document.getElementById('quantityDisplay');
+        let currentValue = parseInt(input.value);
+        input.value = currentValue + 1;
+        display.textContent = input.value;
+    }
+
+    function decrementQuantity() {
+        let input = document.getElementById('quantityInput');
+        let display = document.getElementById('quantityDisplay');
+        let currentValue = parseInt(input.value);
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+            display.textContent = input.value;
+        }
+    }
+            // Get anti-forgery token once
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        // Handle cart form submission
+        const cartForm = document.getElementById('cartForm');
+        const cartBtn = document.querySelector('.cart-btn');
+    // Handle wishlist button click
+        const wishlistBtn = document.querySelector('.wish-btn');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                // e.stopPropagation();
+
+                // Show loading state on wishlist button
+                const normalIcon = this.querySelector('.wishlist-normal-state');
+                const loadingIcon = this.querySelector('.wishlist-loading-state');
+                normalIcon.classList.add('d-none');
+                loadingIcon.classList.remove('d-none');
+                this.disabled = true;
+
+                const productId = this.dataset.productId;
+                const url = this.dataset.url;
+                const heartIcon = this.querySelector('.wishlist-normal-state');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('productId', productId);
+                    formData.append('__RequestVerificationToken', token);
+
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': token
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network error');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Update heart icon based on isAdded status
+                        if (data.isAdded) {
+                            normalIcon.setAttribute('icon', 'lucide:heart');
+                            normalIcon.style.color = '#ff0000';
+                        } else {
+                            normalIcon.setAttribute('icon', 'lucide:heart');
+                            normalIcon.style.color = 'color-mix(in oklab, #000 65%, transparent)';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast("قم بتسجيل الدخول أولا !");
+
+                } finally {
+                    // Hide loading state
+                    setTimeout(() => {
+                        normalIcon.classList.remove('d-none');
+                        loadingIcon.classList.add('d-none');
+                        wishlistBtn.disabled = false;
+                    }, 300);
+                }
+            });
+        }
+
+</script>
+
+

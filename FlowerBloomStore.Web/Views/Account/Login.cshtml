@@ -1,0 +1,868 @@
+﻿@model FlowerBloomStore.Web.Models.LoginViewModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+    Layout = null; // إلغاء Layout الرئيسي
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Flora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+
+<style>
+        :root {
+            --primary-green: #2d5a27;
+            --secondary-green: #4a7856;
+            --light-green: #e8f3e8;
+            --primary-rose: #d44e6c;
+            --light-rose: #fce4e9;
+            --soft-white: #fff9f9;
+            --gold-accent: #c4a747;
+            --leaf-shadow: rgba(45, 90, 39, 0.1);
+            --soft-brown: #8b7355;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, var(--light-green) 0%, #d4e8d4 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 95dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            margin-top:20px;
+        }
+
+        /* خلفية مزخرفة بالأزهار */
+        .flowers-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .flower-bg-item {
+            position: absolute;
+            opacity: 0.15;
+            animation: floatFlower 25s infinite ease-in-out;
+        }
+
+            .flower-bg-item i {
+                font-size: 8rem;
+                color: var(--primary-green);
+            }
+
+        .flower-1 {
+            top: -20px;
+            left: -20px;
+            animation-delay: 0s;
+        }
+
+        .flower-2 {
+            bottom: -30px;
+            right: -30px;
+            animation-delay: 5s;
+            transform: rotate(45deg);
+        }
+
+        .flower-3 {
+            top: 30%;
+            right: 5%;
+            animation-delay: 10s;
+        }
+
+        .flower-4 {
+            bottom: 20%;
+            left: 2%;
+            animation-delay: 15s;
+        }
+
+        @@keyframes floatFlower {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-40px) rotate(10deg);
+            }
+        }
+
+        /* حاوية الصفحة الرئيسية - تصميم أفقي من قسمين */
+        .login-container {
+            display: flex;
+            /* width: 90%; */
+            /* max-width: 1200px; */
+            background: white;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px var(--leaf-shadow), 0 0 0 1px rgba(255,255,255,0.5) inset;
+            position: relative;
+            z-index: 10;
+            animation: containerAppear 1s ease-out;
+        }
+
+        @@keyframes containerAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* القسم الأيمن - الصورة والترحيب */
+        .login-hero {
+            flex: 1.2;
+            background: linear-gradient(145deg, var(--primary-green), #1e3c1a);
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* صور نباتات وزهور في الخلفية */
+        .hero-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path d="M20,30 Q35,15 50,30 T80,30" stroke="white" fill="none" stroke-width="2"/><circle cx="25" cy="25" r="5" fill="white"/><circle cx="75" cy="35" r="5" fill="white"/><path d="M30,70 Q45,55 60,70 T90,70" stroke="white" fill="none" stroke-width="2"/></svg>');
+            background-size: cover;
+            opacity: 0.15;
+            animation: patternMove 40s linear infinite;
+        }
+
+        @@keyframes patternMove {
+            from {
+                transform: translateX(0) translateY(0);
+            }
+
+            to {
+                transform: translateX(-50px) translateY(-50px);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 5;
+        }
+
+        .brand-icon {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+            .brand-icon i {
+                font-size: 3.5rem;
+                color: var(--gold-accent);
+                animation: petalSpin 6s infinite linear;
+            }
+
+        @@keyframes petalSpin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .brand-icon h2 {
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-quote {
+            margin: 50px 0;
+        }
+
+            .hero-quote h1 {
+                color: white;
+                font-size: 3rem;
+                font-weight: 700;
+                line-height: 1.3;
+                margin-bottom: 20px;
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            }
+
+            .hero-quote p {
+                color: rgba(255,255,255,0.95);
+                font-size: 1.2rem;
+                line-height: 1.8;
+                margin-bottom: 30px;
+            }
+
+        .hero-features {
+            display: flex;
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .feature-item {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(5px);
+            padding: 20px 15px;
+            border-radius: 30px;
+            text-align: center;
+            animation: featurePulse 3s infinite;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+            .feature-item:nth-child(2) {
+                animation-delay: 1s;
+            }
+
+            .feature-item:nth-child(3) {
+                animation-delay: 2s;
+            }
+
+        @@keyframes featurePulse {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .feature-item i {
+            font-size: 2.2rem;
+            color: var(--gold-accent);
+            margin-bottom: 10px;
+        }
+
+        .feature-item span {
+            display: block;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .hero-footer {
+            border-top: 2px dashed rgba(255,255,255,0.3);
+            padding-top: 30px;
+        }
+
+        .testimonial {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .testimonial-img {
+            width: 60px;
+            height: 60px;
+            background: var(--gold-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .testimonial-text {
+            flex: 1;
+        }
+
+            .testimonial-text p {
+                color: white;
+                font-style: italic;
+                margin-bottom: 5px;
+            }
+
+            .testimonial-text small {
+                color: rgba(255,255,255,0.8);
+            }
+
+        /* القسم الأيسر - نموذج تسجيل الدخول */
+        .login-form-section {
+            flex: 1;
+            padding: 60px 50px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-header {
+/*            margin-bottom: 40px;*/
+        }
+
+            .form-header h3 {
+                color: var(--primary-green);
+                font-size: 2.2rem;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+
+            .form-header p {
+                color: #666;
+                font-size: 1rem;
+            }
+
+        .social-login {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            border: 2px solid #e8e8e8;
+            border-radius: 50px;
+            background: white;
+            color: #444;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+            .social-btn i {
+                font-size: 1.2rem;
+            }
+
+            .social-btn.google:hover {
+                border-color: #DB4437;
+                background: #fce9e7;
+                color: #DB4437;
+            }
+
+            .social-btn.facebook:hover {
+                border-color: #4267B2;
+                background: #e7ecf7;
+                color: #4267B2;
+            }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--light-green), transparent);
+        }
+
+        .divider span {
+            color: #999;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            animation: slideInField 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+            .form-group:nth-child(1) {
+                animation-delay: 0.2s;
+            }
+
+            .form-group:nth-child(2) {
+                animation-delay: 0.4s;
+            }
+
+            .form-group:nth-child(3) {
+                animation-delay: 0.6s;
+            }
+
+        @@keyframes slideInField {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-green);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+            .form-group label i {
+                color: var(--primary-rose);
+                margin-left: 8px;
+            }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+            .input-wrapper i {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: var(--primary-green);
+                font-size: 1.2rem;
+                transition: all 0.3s ease;
+                z-index: 2;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 45px 15px 20px;
+            border: 2px solid #e8e8e8;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary-rose);
+                box-shadow: 0 0 0 4px rgba(212, 78, 108, 0.1);
+            }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 25px 0;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+            .remember-me input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                accent-color: var(--primary-rose);
+                cursor: pointer;
+            }
+
+            .remember-me span {
+                color: #555;
+                font-size: 0.95rem;
+            }
+
+        .forgot-password {
+            color: var(--primary-rose);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+            .forgot-password:hover {
+                color: var(--primary-green);
+                text-decoration: underline;
+            }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px 30px;
+            background: linear-gradient(145deg, var(--primary-rose), #e45f7c);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+            .btn-login::before {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+
+            .btn-login:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+            .btn-login:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(212, 78, 108, 0.4);
+            }
+
+            .btn-login i {
+                font-size: 1.2rem;
+                animation: arrowMove 2s infinite;
+            }
+
+        @@keyframes arrowMove {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed var(--light-green);
+        }
+
+            .register-link p {
+                color: #666;
+                margin-bottom: 10px;
+            }
+
+            .register-link a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 30px;
+                background: var(--light-green);
+                color: var(--primary-green);
+                text-decoration: none;
+                font-weight: 700;
+                border-radius: 50px;
+                transition: all 0.4s ease;
+                border: 2px solid transparent;
+            }
+
+                .register-link a:hover {
+                    background: var(--primary-green);
+                    color: white;
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 20px var(--leaf-shadow);
+                }
+
+        .validation-summary-errors {
+            background: rgba(220, 53, 69, 0.1);
+            border-right: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            animation: shake 0.5s ease;
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .field-validation-error {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+            padding-right: 15px;
+        }
+
+        /* تصميم متجاوب */
+        @@media (min-width: 768px) {
+            .login-container {
+                transform: scale(.75);
+            }
+        }
+
+        @@media (max-width: 992px) {
+
+            .login-container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+
+            .hero-features {
+                flex-wrap: wrap;
+            }
+
+            .hero-quote h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            body {
+                height: auto;
+            }
+
+            .login-form-section {
+                padding: 0px 0px;
+                transform: scale(.60);
+                margin-top: -140px;
+                margin-bottom: -140px;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            .login-hero{
+                display:none;
+                padding:0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية الزهور -->
+    <div class="flowers-bg">
+        <div class="flower-bg-item flower-1">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <div class="flower-bg-item flower-2">
+            <i class="fas fa-leaf"></i>
+        </div>
+        <div class="flower-bg-item flower-3">
+            <i class="fas fa-tree"></i>
+        </div>
+        <div class="flower-bg-item flower-4">
+            <i class="fas fa-pagelines"></i>
+        </div>
+    </div>
+
+    <!-- حاوية تسجيل الدخول الرئيسية -->
+    <div class="login-container">
+        <!-- القسم الأيمن - الصورة والترحيب -->
+        <div class="login-hero">
+            <div class="hero-bg-pattern"></div>
+
+            <div class="hero-content">
+                <div class="brand-icon">
+                    <i class="fas fa-seedling"></i>
+                    <h2>Flora</h2>
+                </div>
+
+                <div class="hero-quote">
+                    <h1>مرحباً بعودتك!</h1>
+                    <p>سعداء برؤيتك مرة أخرى. ادخل إلى عالم الزهور والجمال مع Flora.</p>
+                </div>
+
+                <div class="hero-features">
+                    <div class="feature-item">
+                        <i class="fas fa-flower"></i>
+                        <span>زهور طبيعية</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-truck"></i>
+                        <span>توصيل سريع</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-gift"></i>
+                        <span>هدايا مميزة</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-footer">
+                <div class="testimonial">
+                    <div class="testimonial-img">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="testimonial-text">
+                        <p>"أجمل الزهور وأرقى الهدايا، تجربة رائعة!"</p>
+                        <small>- سارة الأحمد</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- القسم الأيسر - نموذج تسجيل الدخول -->
+        <div class="login-form-section">
+            <div class="form-header">
+                <h3>تسجيل الدخول</h3>
+                <p>أدخل بياناتك للوصول إلى حسابك</p>
+            </div>
+
+            <!-- أزرار التواصل الاجتماعي -->
+            <div class="social-login">
+                <a href="#" class="social-btn google">
+                    <i class="fab fa-google"></i>
+                    Google
+                </a>
+                <a href="#" class="social-btn facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook
+                </a>
+            </div>
+
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span>أو استخدم البريد الإلكتروني</span>
+                <div class="divider-line"></div>
+            </div>
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "loginForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+
+                <!-- البريد الإلكتروني -->
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email, new { @class = "control-label" })
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "أدخل بريدك الإلكتروني" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-validation-error" })
+                </div>
+
+                <!-- كلمة المرور -->
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "control-label" })
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "أدخل كلمة المرور", id = "password" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-validation-error" })
+                </div>
+
+                <!-- خيارات إضافية -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="RememberMe" />
+                        <span>تذكرني</span>
+                    </label>
+                    <a href="@Url.Action("ForgotPassword", "Account")" class="forgot-password">
+                        نسيت كلمة المرور؟
+                    </a>
+                </div>
+
+                <!-- زر تسجيل الدخول -->
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    دخول
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            }
+
+            <!-- رابط التسجيل -->
+            <div class="register-link">
+                <p>ليس لديك حساب؟</p>
+                <a href="@Url.Action("Register", "Account")">
+                    <i class="fas fa-user-plus"></i>
+                    إنشاء حساب جديد
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // تأثيرات حركية إضافية
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                const icon = this.previousElementSibling;
+                if (icon && icon.classList.contains('fa')) {
+                    icon.style.transform = 'translateY(-50%) scale(1.2)';
+                    icon.style.color = 'var(--primary-rose)';
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                const icon = this.previousElementSibling;
+                if (icon && icon.classList.contains('fa')) {
+                    icon.style.transform = 'translateY(-50%) scale(1)';
+                    icon.style.color = 'var(--primary-green)';
+                }
+            });
+        });
+
+        // تأثير تحميل النموذج
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const btn = document.querySelector('.btn-login');
+            if (btn && btn.disabled !== true) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+                btn.disabled = true;
+            }
+        });
+
+        // إخفاء رسائل الخطأ بعد 5 ثواني
+        setTimeout(function() {
+            document.querySelectorAll('.field-validation-error').forEach(el => {
+                if (el.innerHTML.trim() !== '') {
+                    el.style.transition = 'opacity 0.5s';
+                    el.style.opacity = '0';
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

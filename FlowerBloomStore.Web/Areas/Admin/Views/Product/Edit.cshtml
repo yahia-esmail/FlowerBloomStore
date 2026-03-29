@@ -1,0 +1,195 @@
+﻿@* @using FlowerBloomStore.Domain.Entities.ProductModules
+@model Product
+
+@{
+    ViewData["Title"] = "تعديل منتج ";
+}
+
+<div class="container mt-5">
+    <h2>تعديل منتج </h2>
+
+    <form asp-action="Edit/@Model.Id" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">اسم المنتج</label>
+            <input asp-for="Name" name="Name" value="@Model.Name" class="form-control" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description"  class="form-label">الوصف</label>
+            <textarea asp-for="Description" name="Description" value="@Model.Description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price" class="form-label">السعر</label>
+            <input asp-for="Price" name="Price" value="@Model.Price" class="form-control" type="number" step="0.01" required />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StockQuantity" class="form-label">المخزون</label>
+            <input asp-for="StockQuantity" name="StockQuantity" value="@Model.StockQuantity" class="form-control" type="number" required />
+            <span asp-validation-for="StockQuantity" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label">الفئة</label>
+            <select asp-for="CategoryId" name="CategoryId" class="form-select" required>
+                <option value="">اختر الفئة</option>
+                @foreach (var cat in ViewBag.Categories)
+                {
+                    if (cat.Id == Model.CategoryId)
+                    {
+                        <option selected value="@cat.Id">@cat.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">صورة المنتج</label>
+            <input type="file" name="imageFile" value="@Model.ImageUrl" class="form-control" accept="image/*" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">تعديل المنتج</button>
+        <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
+
+
+@using FlowerBloomStore.Domain.Entities.ProductModules
+@model Product
+
+@{
+    ViewData["Title"] = "تعديل المنتج";
+    Layout = "_AdminLayout";
+}
+
+<!-- Header -->
+<header style="background-color: hsla(40, 20%, 98.5%, 1)" class="w-full">
+    <div style="padding: .5rem 2rem 0rem;" class="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+        <div>
+            <h1 style="color: color-mix(in oklab, #000 90%, transparent)" class="text-2xl font-semibold">تعديل المنتج</h1>
+        </div>
+    </div>
+</header>
+
+<!-- Main Section -->
+<main class="pf-4c9ba5f1-bg-page grow shrink w-[80%] p-4" style="flex-basis: 0%">
+    <!-- Card Container -->
+    <div style="background-color: rgba(255, 255, 255, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06);" class="overflow-hidden rounded-2xl p-4 px-8">
+
+        @if (TempData["Error"] != null)
+        {
+            <div style="background-color: #FEE2E2; border: 1px solid #F87171; color: #B91C1C;" class="rounded-lg p-4 mb-6 text-sm">
+                @TempData["Error"]
+            </div>
+        }
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-5">
+                <label asp-for="Name" class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">اسم المنتج</label>
+                <input asp-for="Name" name="Name" value="@Model.Name" required
+                       class="w-full p-3 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30"
+                       style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);" />
+                <span asp-validation-for="Name" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="Description" class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">الوصف</label>
+                <textarea asp-for="Description" name="Description" value="@Model.Description" rows="2"
+                          class="w-full p-3 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30"
+                          style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);">@Model.Description</textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                <div>
+                    <label asp-for="Price" class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">السعر</label>
+                    <input asp-for="Price" name="Price" value="@Model.Price" type="number" step="0.01" required
+                           class="w-full p-3 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30"
+                           style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);" />
+                    <span asp-validation-for="Price" class="text-red-500 text-sm"></span>
+                </div>
+                <div>
+                    <label asp-for="StockQuantity" class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">المخزون</label>
+                    <input asp-for="StockQuantity" name="StockQuantity" value="@Model.StockQuantity" type="number" required
+                           class="w-full p-3 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30"
+                           style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);" />
+                    <span asp-validation-for="StockQuantity" class="text-red-500 text-sm"></span>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <label asp-for="CategoryId" class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">
+                    الفئة <span class="text-red-500">*</span>
+                </label>
+                <select asp-for="CategoryId" value="@Model.CategoryId" name="CategoryId" required
+                        class="w-full p-3 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30 appearance-none"
+                        style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);">
+                    <option value="">-- اختر الفئة --</option>
+                    @if (ViewBag.Categories != null)
+                    {
+                        foreach (var cat in (IEnumerable<FlowerBloomStore.Domain.Entities.ProductModules.Category>)ViewBag.Categories)
+                        {
+                            if (cat.Id == Model.CategoryId)
+                            {
+                                <option value="@cat.Id" selected>@cat.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@cat.Id">@cat.Name</option>
+                            }
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2" style="color: color-mix(in oklab, #000 90%, transparent);">صورة المنتج</label>
+
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="flex items-center gap-4 mb-3">
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="w-20 h-20 object-cover rounded-lg border border-gray-200" />
+                        <span class="text-sm text-gray-500">الصورة الحالية</span>
+                    </div>
+                }
+                <input type="file" name="imageFile" value="@Model.ImageUrl"  accept="image/*"
+                       class="w-full p-2 border border-solid rounded-lg focus:outline-none focus:border-[#2D5F3F]/30 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#2D5F3F]/10 file:text-[#2D5F3F] hover:file:bg-[#2D5F3F]/20"
+                       style="background-color: rgba(255, 255, 255, 1); border-color: oklch(92.8% 0.006 264.531);" />
+                <small class="text-gray-500 text-sm">اترك هذا الحقل فارغاً إذا لم ترد تغيير الصورة</small>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                        class="hover:bg-[#1E4229] rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                        style="background-color: rgba(45, 95, 63, 1); color: white;">
+                    حفظ التعديلات
+                </button>
+                <a asp-action="Index"
+                   class="hover:bg-[#2D5F3F]/5 border border-solid rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                   style="background-color: rgba(255, 255, 255, 1); color: rgba(45, 95, 63, 1); border-color: color-mix(in oklab, #2d5f3f 20%, transparent);">
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+

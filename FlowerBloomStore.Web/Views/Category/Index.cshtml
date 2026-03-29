@@ -1,0 +1,55 @@
+﻿@using FlowerBloomStore.Domain.Entities.ProductModules
+@model IEnumerable<Category>
+
+@{
+    ViewData["Title"] = "الفئات";
+}
+<head>
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+
+</head>
+
+<section class="categories-section">
+
+    <div class="section-header">
+        <h2>تسوق حسب الفئة</h2>
+        <p>اختر من فئاتنا المتنوعة لتجد ما يناسب ذوقك</p>
+    </div>
+
+    <div class="categories-grid">
+        @foreach (var category in Model)
+        {
+            <div class="category-card">
+
+                @if (!string.IsNullOrEmpty(category.ImageUrl))
+                {
+                    <img src="@category.ImageUrl" alt="@category.Name" />
+                }
+                else
+                {
+                    <img src="/images/default-category.jpg" alt="No Image" />
+                }
+
+                <div class="category-content">
+                    <h3>@category.Name</h3>
+
+                    <a asp-controller="Product"
+                       asp-action="Index"
+                       asp-route-categoryId="@category.Id"
+                       class="category-btn">
+                        تسوق الآن
+                        <span class="arrow">←</span>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="admin-btn">
+            <a asp-action="Create" class="btn-create">إضافة فئة جديدة</a>
+        </div>
+    }
+
+</section>

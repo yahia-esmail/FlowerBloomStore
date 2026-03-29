@@ -1,0 +1,130 @@
+﻿@* @using FlowerBloomStore.Domain.Entities.ProductModules
+@model Product
+
+@{
+    ViewData["Title"] = "حذف منتج";
+}
+
+<div class="container mt-5">
+    <h2>هل أنت متأكد من حذف المنتج "@Model.Name"؟</h2>
+
+    <dl class="row">
+        <dt class="col-sm-2">الاسم</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">السعر</dt>
+        <dd class="col-sm-10">@Model.Price.ToString("C")</dd>
+        <dt class="col-sm-2">المخزون</dt>
+        <dd class="col-sm-10">@Model.StockQuantity</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">نعم، احذف</button>
+        <a asp-action="Index" class="btn btn-secondary">إلغاء</a>
+    </form>
+</div> *@
+
+@using FlowerBloomStore.Domain.Entities.ProductModules
+@model Product
+
+@{
+    ViewData["Title"] = "حذف المنتج";
+    Layout = "_AdminLayout";
+}
+
+<!-- Header -->
+<header style="background-color: hsla(40, 20%, 98.5%, 1)" class="w-full">
+    <div style="padding: .5rem 2rem 0rem;" class="flex flex-col lg:flex-row justify-between items-start lg:items-center">
+        <div>
+            <h1 style="color: color-mix(in oklab, #000 90%, transparent)" class="text-2xl font-semibold">حذف المنتج</h1>
+        </div>
+    </div>
+</header>
+
+<!-- Main Section -->
+<main class="pf-4c9ba5f1-bg-page grow shrink w-[80%] p-4" style="flex-basis: 0%">
+    <!-- Card Container -->
+    <div style="background-color: rgba(255, 255, 255, 1); box-shadow: 0 2px 8px rgba(45, 95, 63, 0.06);" class="overflow-hidden rounded-2xl p-4 px-8">
+
+     
+        <div style="background-color: #FEE2E2; border: 1px solid #F87171; color: #B91C1C;" class="rounded-lg p-4 mb-6 text-sm">
+            <div class="flex items-center gap-2">
+                <iconify-icon icon="lucide:alert-triangle" class="text-lg"></iconify-icon>
+                <span>هل أنت متأكد من حذف المنتج "<strong>@Model.Name</strong>"؟ هذا الإجراء لا يمكن التراجع عنه.</span>
+            </div>
+        </div>
+
+       
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold mb-4" style="color: color-mix(in oklab, #000 90%, transparent);">تفاصيل المنتج</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+             
+                <div>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <img src="@Model.ImageUrl" alt="@Model.Name" class="w-40 h-40 object-cover rounded-lg border border-gray-200" />
+                        </div>
+                    }
+
+                    <div class="space-y-3">
+                        <div>
+                            <span class="text-sm font-medium block" style="color: color-mix(in oklab, #000 65%, transparent);">اسم المنتج</span>
+                            <span class="text-base" style="color: color-mix(in oklab, #000 90%, transparent);">@Model.Name</span>
+                        </div>
+
+                        <div>
+                            <span class="text-sm font-medium block" style="color: color-mix(in oklab, #000 65%, transparent);">السعر</span>
+                            <span class="text-base font-semibold" style="color: rgba(45, 95, 63, 1);">@Model.Price.ToString("C")</span>
+                        </div>
+
+                        <div>
+                            <span class="text-sm font-medium block" style="color: color-mix(in oklab, #000 65%, transparent);">المخزون</span>
+                            <span class="text-base" style="color: color-mix(in oklab, #000 90%, transparent);">@Model.StockQuantity</span>
+                        </div>
+                    </div>
+                </div>
+
+              
+                <div class="space-y-3">
+                    <div>
+                        <span class="text-sm font-medium block" style="color: color-mix(in oklab, #000 65%, transparent);">الوصف</span>
+                        <span class="text-base" style="color: color-mix(in oklab, #000 90%, transparent);">@(string.IsNullOrEmpty(Model.Description) ? "لا يوجد وصف" : Model.Description)</span>
+                    </div>
+
+                    <div>
+                        <span class="text-sm font-medium block" style="color: color-mix(in oklab, #000 65%, transparent);">الفئة</span>
+                        <span class="text-base" style="color: color-mix(in oklab, #000 90%, transparent);">@Model.Category?.Name</span>
+                    </div>
+
+                  
+
+                </div>
+            </div>
+        </div>
+
+       
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="flex items-center gap-3">
+                <button type="submit"
+                        class="hover:bg-[#B91C1C] rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                        style="background-color: #DC2626; color: white;">
+                    <div class="flex items-center gap-2">
+                        <iconify-icon icon="lucide:trash-2" class="text-lg"></iconify-icon>
+                        <span>نعم، احذف المنتج</span>
+                    </div>
+                </button>
+
+                <a asp-action="Index"
+                   class="hover:bg-[#2D5F3F]/5 border border-solid rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                   style="background-color: rgba(255, 255, 255, 1); color: rgba(45, 95, 63, 1); border-color: color-mix(in oklab, #2d5f3f 20%, transparent);">
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</main>

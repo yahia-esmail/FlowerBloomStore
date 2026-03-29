@@ -1,0 +1,295 @@
+﻿@using FlowerBloomStore.Domain.Entities.OrderModules
+@using FlowerBloomStore.Domain.Enums
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "إدارة الطلبات";
+    var currentStatus = ViewBag.Status != null
+        ? (OrderStatus)Enum.Parse(typeof(OrderStatus), ViewBag.Status.ToString())
+        : (OrderStatus?)null;
+    var currentUserId = ViewBag.UserId as string;
+    var fromDate = ViewBag.FromDate as string;
+    var toDate = ViewBag.ToDate as string;
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+    Layout = "_AdminLayout";
+}
+<div class="p-4 md:p-8">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+        <h1 class="text-2xl font-semibold text-gray-900">إدارة الطلبات</h1>
+        <div class="flex flex-wrap gap-2">
+            <a href="@Url.Action("Pending")"
+               class="px-4 py-2 text-sm font-medium text-yellow-800 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition">
+               الطلبات المعلقة
+            </a>
+            <a href="@Url.Action("Processing")"
+               class="px-4 py-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-lg hover:bg-blue-200 transition">
+               جاري التجهيز
+            </a>
+            <a href="@Url.Action("Delivered")"
+               class="px-4 py-2 text-sm font-medium text-green-800 bg-green-100 rounded-lg hover:bg-green-200 transition">
+               تم التسليم
+            </a>
+            <a href="@Url.Action("Cancelled")"
+               class="px-4 py-2 text-sm font-medium text-red-800 bg-red-100 rounded-lg hover:bg-red-200 transition">
+               ملغاة
+            </a>
+        </div>
+    </div>
+    <!-- Filters Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <div class="p-6">
+            <form asp-action="Index" method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">حالة الطلب</label>
+                    <select name="status"
+                            class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#2D5F3F]/20 focus:border-[#2D5F3F] outline-none transition">
+                        <option value="">الكل</option>
+                        @foreach (OrderStatus s in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@s" selected="@(currentStatus == s)">@s</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">رقم المستخدم / الإيميل</label>
+                    <input type="text" name="userId" value="@currentUserId"
+                           placeholder="ID أو إيميل"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#2D5F3F]/20 focus:border-[#2D5F3F] outline-none transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                    <input type="date" name="fromDate" value="@fromDate"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#2D5F3F]/20 focus:border-[#2D5F3F] outline-none transition" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                    <input type="date" name="toDate" value="@toDate"
+                           class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#2D5F3F]/20 focus:border-[#2D5F3F] outline-none transition" />
+                </div>
+                <div class="flex items-end">
+                    <button type="submit"
+                            class="w-full px-6 py-2 bg-[#2D5F3F] text-white rounded-lg hover:bg-[#1E4229] transition font-medium">
+                        فلتر
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Orders Table Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">قائمة الطلبات</h3>
+                <span class="text-sm text-gray-500">@Model.Count() طلب في هذه الصفحة</span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">#</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">العميل</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">تاريخ الطلب</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">الإجمالي</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">حالة الطلب</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">طريقة الدفع</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-gray-600">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                لا توجد طلبات تطابق الفلتر الحالي
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var order in Model)
+                        {
+                            <tr class="hover:bg-gray-50/50 transition">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#@order.Id</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if (order.User != null)
+                                    {
+                                        <div class="text-sm font-medium text-gray-900">@order.User.FullName</div>
+                                        <div class="text-xs text-gray-500">@order.User.Email</div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-sm text-gray-500">غير معروف</span>
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">@order.TotalAmount.ToString("C")</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-3 py-1 text-xs font-medium rounded-full
+                                        @(order.Status == OrderStatus.Pending ? "bg-yellow-100 text-yellow-800" :
+                                          order.Status == OrderStatus.Processing ? "bg-blue-100 text-blue-800" :
+                                          order.Status == OrderStatus.Delivered ? "bg-green-100 text-green-800" :
+                                          order.Status == OrderStatus.Cancelled ? "bg-red-100 text-red-800" : "bg-gray-100 text-gray-800")">
+                                        @order.Status
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    @(order.Payment?.PaymentMethod != null ? order.Payment.PaymentMethod.ToString() : "غير محدد")
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-2">
+                                     <a href="@Url.Action("Details", "Order", new { area = "Admin", id = order.Id })"
+                                           class="p-2 text-gray-500 hover:text-[#2D5F3F] transition"
+                                           title="التفاصيل">
+                                            <iconify-icon icon="lucide:eye" class="text-lg"></iconify-icon>
+                                        </a>
+                                        <!-- Dropdown menu with vanilla JS -->
+                                        <div class="relative" id="dropdown-@order.Id">
+                                            <button onclick="toggleDropdown('dropdown-@order.Id')"
+                                                    class="p-2 text-gray-500 hover:text-[#2D5F3F] transition"
+                                                    title="تغيير الحالة">
+                                                <iconify-icon icon="lucide:more-vertical" class="text-lg"></iconify-icon>
+                                            </button>
+                                            <div id="menu-@order.Id"
+                                                 class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
+    
+                                                @* حالة جاري التجهيز *@
+                                                @if (order.Status != OrderStatus.Processing)
+                                                {
+                                                    <form action="@Url.Action("UpdateStatus", "Order", new { area = "Admin" })" method="post" class="block m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@order.Id" />
+                                                        <input type="hidden" name="newStatus" value="Processing" />
+                                                        <button type="submit" class="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                                            جاري التجهيز
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                @* حالة تم التسليم *@
+                                                @if (order.Status != OrderStatus.Delivered)
+                                                {
+                                                    <form action="@Url.Action("UpdateStatus", "Order", new { area = "Admin" })" method="post" class="block m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@order.Id" />
+                                                        <input type="hidden" name="newStatus" value="Delivered" />
+                                                        <button type="submit" class="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                                                            تم التسليم
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                @* حالة إلغاء الطلب *@
+                                                @if (order.Status != OrderStatus.Cancelled)
+                                                {
+                                                    <form action="@Url.Action("UpdateStatus", "Order", new { area = "Admin" })" method="post" class="block m-0">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@order.Id" />
+                                                        <input type="hidden" name="newStatus" value="Cancelled" />
+                                                        <button type="submit" class="w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition font-medium">
+                                                            إلغاء الطلب
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        @if (totalPages >1)
+        {
+            <div class="px-6 py-4 border-t border-gray-100">
+                <nav class="flex justify-center" aria-label="Page navigation">
+                    <ul class="flex items-center gap-1">
+                        <li>
+                           <a href="@Url.Action("Index", "Order", new { area = "Admin", page = currentPage - 1, status = currentStatus, userId = currentUserId, fromDate = fromDate, toDate = toDate })"    asp-route-page="@(currentPage - 1)"
+                               asp-route-status="@currentStatus"
+                               asp-route-userId="@currentUserId"
+                               asp-route-fromDate="@fromDate"
+                               asp-route-toDate="@toDate"
+                               class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-50 @(currentPage == 1 ? "pointer-events-none opacity-50" : "")">
+                                <iconify-icon icon="lucide:chevron-right" class="text-sm"></iconify-icon>
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Order", new { area = "Admin", page = i, status = currentStatus, userId = currentUserId, fromDate = fromDate, toDate = toDate })"   asp-route-page="@i"
+                                   asp-route-status="@currentStatus"
+                                   asp-route-userId="@currentUserId"
+                                   asp-route-fromDate="@fromDate"
+                                   asp-route-toDate="@toDate"
+                                   class="flex items-center justify-center w-8 h-8 rounded-lg text-sm @(i == currentPage ? "bg-[#2D5F3F] text-white" : "text-gray-700 hover:bg-gray-100")">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                        <li>
+                           <a href="@Url.Action("Index", "Order", new { area = "Admin", page = currentPage + 1, status = currentStatus, userId = currentUserId, fromDate = fromDate, toDate = toDate })"     asp-route-page="@(currentPage + 1)"
+                               asp-route-status="@currentStatus"
+                               asp-route-userId="@currentUserId"
+                               asp-route-fromDate="@fromDate"
+                               asp-route-toDate="@toDate"
+                               class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 disabled:opacity-50 @(currentPage == totalPages ? "pointer-events-none opacity-50" : "")">
+                                <iconify-icon icon="lucide:chevron-left" class="text-sm"></iconify-icon>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+<!-- JavaScript for dropdowns -->
+<script>
+    function toggleDropdown(id) {
+        var menu = document.getElementById('menu-' + id.split('-')[1]);
+        menu.classList.toggle('hidden');
+        // Close when clicking outside
+        function closeMenu(e) {
+            if (!menu.contains(e.target) && !e.target.closest('button[onclick*="' + id + '"]')) {
+                menu.classList.add('hidden');
+                document.removeEventListener('click', closeMenu);
+            }
+        }
+        if (!menu.classList.contains('hidden')) {
+            // Add listener after a tiny delay to avoid immediate closing
+            setTimeout(() => document.addEventListener('click', closeMenu), 10);
+        }
+    }
+</script>
+<!-- Toast Messages -->
+@if (TempData["Success"] != null)
+{
+    <script>
+        Toastify({
+            text: "@TempData["Success"]",
+            duration: 4000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#28a745",
+            stopOnFocus: true
+        }).showToast();
+    </script>
+}
+@if (TempData["Error"] != null)
+{
+    <script>
+        Toastify({
+            text: "@TempData["Error"]",
+            duration: 4000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#dc3545",
+            stopOnFocus: true
+        }).showToast();
+    </script>
+}
+ 

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.9" />
+	  <ProjectReference Include="..\FlowerBloomStore.Domain\FlowerBloomStore.Domain.csproj" />
+	  <ProjectReference Include="..\FlowerBloomStore.Infrastructure\FlowerBloomStore.Infrastructure.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlowerBloomStore.Domain\FlowerBloomStore.Domain.csproj" />
+    <ProjectReference Include="..\FlowerBloomStore.Infrastructure\FlowerBloomStore.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
